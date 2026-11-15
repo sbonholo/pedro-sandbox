@@ -72,7 +72,12 @@ svg{display:block}
 .mbtn.rebirth{background:var(--reb);box-shadow:0 5px 0 var(--reb-d)}
 .mbtn.shop{background:var(--shop);box-shadow:0 5px 0 var(--shop-d);color:#3a2700;text-shadow:none}
 .dot{position:absolute;top:-7px;right:-7px;min-width:22px;height:22px;border-radius:11px;background:#ff2e4d;border:2px solid #fff;font:400 12px/18px var(--display);text-align:center;padding:0 4px;color:#fff;text-shadow:none}
-.tap{height:86px;border-radius:24px;background:linear-gradient(#5cf08a,#2fc75d);box-shadow:0 7px 0 var(--go-d),0 10px 20px rgba(0,0,0,.3);border:4px solid #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font:400 40px/1 var(--display);letter-spacing:.04em;text-shadow:0 3px 0 rgba(0,0,0,.35);transition:transform .06s,box-shadow .06s,filter .2s}
+.brow{display:flex;gap:8px}
+.jump{width:86px;height:86px;flex:none;border-radius:24px;background:linear-gradient(#6f9bff,#3f6fe8);box-shadow:0 7px 0 #2546a3,0 10px 20px rgba(0,0,0,.3);border:4px solid #fff;font:400 20px var(--display);letter-spacing:.04em;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.jump:active{transform:translateY(5px);box-shadow:0 2px 0 #2546a3}
+#joy{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:60px;background:rgba(13,21,48,.35);border:3px solid rgba(255,255,255,.7);pointer-events:none;z-index:5}
+#joyKnob{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:26px;background:rgba(255,255,255,.9)}
+.tap{flex:1;min-width:0;height:86px;border-radius:24px;background:linear-gradient(#5cf08a,#2fc75d);box-shadow:0 7px 0 var(--go-d),0 10px 20px rgba(0,0,0,.3);border:4px solid #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font:400 40px/1 var(--display);letter-spacing:.04em;text-shadow:0 3px 0 rgba(0,0,0,.35);transition:transform .06s,box-shadow .06s,filter .2s}
 .tap small{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;text-shadow:none;opacity:.9;margin-top:4px}
 .tap.hit{transform:translateY(5px);box-shadow:0 2px 0 var(--go-d)}
 .tap.off{filter:saturate(.25) brightness(.85)}
@@ -231,6 +236,7 @@ h3.t{margin:0;font:400 22px var(--display)}
   .center .big{font-size:42px}
   .stat{min-height:38px}
   .tap{height:70px;font-size:32px}
+  .jump{width:70px;height:70px;font-size:17px}
   .mbtn{height:46px;font-size:11px}
   .mbtn svg{width:20px;height:20px}
   .menu{gap:6px}
@@ -270,9 +276,10 @@ h3.t{margin:0;font:400 22px var(--display)}
     </div>
     <div class="hud-bottom">
       <div class="meter"><i id="meterFill"></i><span id="meterTxt">TIME</span></div>
-      <button class="tap ready" id="tapBtn"><span id="tapLabel">TAP!</span><small id="tapSmall">or tap the screen</small></button>
+      <div class="brow"><button class="tap ready" id="tapBtn"><span id="tapLabel">TAP!</span><small id="tapSmall">or tap the screen</small></button><button class="jump" id="jumpBtn" aria-label="Jump">JUMP</button></div>
     </div>
   </div>
+  <div id="joy" hidden><i id="joyKnob"></i></div>
   <div id="fx"></div>
   <div id="result" hidden></div>
   <div id="banner"></div>
@@ -847,7 +854,7 @@ function buildRunner(SH = '#2f7dff', CAP = '#ff3b3b', PA = '#1d2b4f', SK = '#f2c
   gr.addColorStop(0, 'rgba(0,0,0,.45)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); sg.fillStyle = gr; sg.fillRect(0, 0, 64, 64);
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 2.2), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, depthWrite: false }));
   shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.04; r.add(shadow);
-  r.userData = { body, armL, armR, legL, legR, head, phase: 0, kick: 0 };
+  r.userData = { body, armL, armR, legL, legR, head, shadow, phase: 0, kick: 0 };
   return r;
 }
 const runner = buildRunner(); scene.add(runner);
@@ -889,6 +896,34 @@ function kin(top, a, t) {
   if (top <= 0) return [0, 0];
   const tr = top / a;
   return [Math.min(top, a * t), t <= tr ? 0.5 * a * t * t : top * t - top * top / (2 * a)];
+}
+/* ---- lobby: plaza and walk-up stations ---- */
+const lobby = new THREE.Group(); scene.add(lobby);
+const plazaMat = new THREE.MeshLambertMaterial({ color: 0xd39a58 });
+const plaza = new THREE.Mesh(new THREE.PlaneGeometry(40, 28), plazaMat);
+plaza.rotation.x = -Math.PI / 2; plaza.position.set(0, 0.03, 15.5); lobby.add(plaza);
+const eggMat = new THREE.MeshLambertMaterial({ color: 0x8be36a });
+const STATIONS = [
+  ['pets', 'PETS', -10, 9, '#ff9a2e'], ['trails', 'TRAILS', 10, 9, '#a45cff'],
+  ['worlds', 'WORLDS', -10, 20, '#1fc4d8'], ['rebirth', 'REBIRTH', 10, 20, '#ff4fa3'], ['shop', 'SHOP', 0, 25, '#ffc83d'],
+].map(([k, label, x, z, col]) => {
+  const g = new THREE.Group(); g.position.set(x, 0, z);
+  g.add(part(GEO.cyl, col, 4.8, 0.14, 4.8, 0, 0.07, 0, 0.35));
+  g.add(part(GEO.cyl, '#ffffff', 5.3, 0.08, 5.3, 0, 0.04, 0));
+  let icon;
+  if (k === 'pets') icon = part(GEO.sph, eggMat, 1.5, 2, 1.5, 0, 2.2, 0);
+  else if (k === 'trails') icon = part(GEO.oct, col, 1.5, 2.2, 1.5, 0, 2.3, 0, 0.6);
+  else if (k === 'worlds') icon = part(GEO.ring, col, 2.8, 2.8, 2.8, 0, 2.4, 0, 0.7);
+  else if (k === 'rebirth') icon = part(GEO.ico, col, 1.8, 1.8, 1.8, 0, 2.3, 0, 0.5);
+  else { icon = part(GEO.box, col, 1.6, 1.6, 1.6, 0, 2.2, 0, 0.2); icon.add(part(GEO.box, '#ff4757', 1.05, 0.25, 1.05, 0, 0, 0)); }
+  g.add(icon);
+  const tag = nameTag(label); tag.scale.set(2.6, 0.65, 1); tag.position.y = 4.3; g.add(tag);
+  lobby.add(g);
+  return { k, x, z, icon };
+});
+{ // green race pad at the start line
+  const pad = part(GEO.box, '#38d86a', 10.6, 0.1, 3, 0, 0.06, -0.4, 0.4); lobby.add(pad);
+  const tag = nameTag('RACE HERE'); tag.scale.set(3, 0.75, 1); tag.position.set(0, 0.9, 1.3); lobby.add(tag);
 }
 const ORD = ['1st', '2nd', '3rd', '4th', '5th'];
 const placeNow = () => 1 + BOTS.filter(b => b.dist > race.dist).length;
@@ -992,20 +1027,35 @@ function buildWorld(w) {
   hemi.color.set(W.dark ? '#c8b8ff' : '#ffffff'); hemi.groundColor.set(W.dark ? '#402040' : '#6a7a6a');
   buildProps(W);
   setupAmbient(W.ambient);
+  plazaMat.color.set(W.track2); eggMat.color.set(W.egg[0]);
+  if (W.dark) { plazaMat.emissive.set(W.track2); plazaMat.emissiveIntensity = 0.35; } else plazaMat.emissiveIntensity = 0;
   startArch.userData.pm.color.set(W.edge);
   drawBanner(startArch, 'START', '', W.edge);
   freeArches();
 }
 
 /* ---------------- game state ---------------- */
-let phase = 'tap', phaseT = 0, built = 0, tapCombo = 0, autoAcc = 0, lastTap = 0;
+const pl = { x: 0, y: 0, z: 9, vy: 0, face: 0, inside: null };
+const camOff = { x: 0, z: 9, l: 1 };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+let phase = 'lobby', phaseT = 0, built = 0, tapCombo = 0, autoAcc = 0, lastTap = 0;
 const race = { t: 0, v: 0, dist: 0, next: 0, won: 0, top: 0, a: 1, finished: false, newBest: false, place: 1, bonus: 0 };
 let V = 0; // visual scroll speed (units/s)
 const ui = { sheet: null, hatch: false, tut: false, fading: false, petTab: 'hatch' };
 const blocked = () => !!(ui.sheet || ui.hatch || ui.tut || ui.fading);
 let lastTick = 99;
 
+function enterLobby() {
+  startTap();
+  phase = 'lobby'; pl.x = 0; pl.z = 9; pl.y = 0; pl.vy = 0; pl.face = 0; pl.inside = null;
+  setTapBtn('RACE!', 'or walk to the green pad', false);
+}
+function jump() {
+  if (blocked()) return;
+  if ((phase === 'lobby' || phase === 'race') && pl.y === 0) { pl.vy = 11; tone(300, 0.15, 'sine', 0.06, 2); }
+}
 function startTap() {
+  pl.x = 0; pl.z = 0; pl.y = 0; pl.vy = 0; lobby.position.z = 0; lobby.visible = true;
   phase = 'tap'; phaseT = 0; built = 0; tapCombo = 0; autoAcc = 0; lastTick = 99;
   race.t = 0; race.v = 0; race.dist = 0; race.next = 0; race.won = 0; race.top = 0; race.finished = false;
   for (const bt of BOTS) { bt.dist = 0; bt.v = 0; }
@@ -1033,7 +1083,7 @@ function endRace() {
   if (race.dist > S.best) { S.best = race.dist; race.newBest = S.races > 1; }
   markDirty();
   showResult();
-  setTapBtn('NEXT RACE', 'tap to skip', false);
+  setTapBtn('RACE AGAIN', 'or wait for the lobby', false);
 }
 function stepRace(dt) {
   race.t = Math.min(E.RACE_TIME, race.t + dt);
@@ -1071,6 +1121,7 @@ function passGate() {
 function tapAt(x, y) {
   ensureAudio();
   if (blocked()) return;
+  if (phase === 'lobby') { startTap(); return; }
   if (phase === 'result') { if (phaseT > 0.6) startTap(); return; }
   if (phase !== 'tap') return;
   const n = performance.now(); if (n - lastTap < 33) return; lastTap = n;
@@ -1109,7 +1160,7 @@ function spawnTrail(n, power) {
   for (let i = 0; i < n; i++) {
     trailCount++;
     const side = trailCount % 2 ? -0.26 : 0.26;
-    trailFx.spawn(side + rnd(-0.15, 0.15), has ? rnd(0.25, 1.6) : rnd(0.1, 0.5), rnd(0.2, 0.6), rnd(-0.3, 0.3), has ? rnd(-0.1, 0.5) : rnd(0.2, 0.9), rnd(0.5, 2) * power,
+    trailFx.spawn(pl.x + side + rnd(-0.15, 0.15), pl.y + (has ? rnd(0.25, 1.6) : rnd(0.1, 0.5)), pl.z + rnd(0.2, 0.6), rnd(-0.3, 0.3), has ? rnd(-0.1, 0.5) : rnd(0.2, 0.9), rnd(0.5, 2) * power,
       has ? rnd(0.7, 1.2) : rnd(0.4, 0.7), has ? rnd(0.35, 0.6) : rnd(0.3, 0.55), trailColor(clock, trailCount), has ? 0 : 1);
   }
 }
@@ -1119,7 +1170,7 @@ const txtCache = {};
 function setText(id, t) { if (txtCache[id] !== t) { txtCache[id] = t; $(id).textContent = t; } }
 function setTapBtn(label, small, off) {
   setText('tapLabel', label); setText('tapSmall', small);
-  $('tapBtn').classList.toggle('off', off); $('tapBtn').classList.toggle('ready', !off && phase === 'tap');
+  $('tapBtn').classList.toggle('off', off); $('tapBtn').classList.toggle('ready', !off && (phase === 'tap' || phase === 'lobby'));
 }
 function bump(id) { const e = $(id); e.classList.remove('bump'); void e.offsetWidth; e.classList.add('bump'); }
 let fxCount = 0;
@@ -1140,7 +1191,10 @@ function updateHUD() {
   setText('worldName', WORLDS[S.world].name);
   setText('placeTxt', phase === 'race' ? ORD[placeNow() - 1] + ' / 5' : phase === 'result' ? ORD[race.place - 1] + ' / 5' : '- / 5');
   const fill = $('meterFill');
-  if (phase === 'tap') {
+  if (phase === 'lobby') {
+    setText('phaseTxt', 'LOBBY'); setText('bigTxt', ''); setText('subTxt', 'WALK TO THE START LINE');
+    $('nextTxt').hidden = true; fill.style.width = '0%'; setText('meterTxt', 'FREE ROAM');
+  } else if (phase === 'tap') {
     const left = Math.max(0, E.TAP_TIME - phaseT);
     setText('phaseTxt', S.races === 0 && phaseT < 3 ? 'TAP TO GET FAST!' : 'TAP FAST!');
     setText('bigTxt', String(Math.ceil(left)));
@@ -1158,7 +1212,7 @@ function updateHUD() {
     fill.style.width = (race.top > 0 ? race.v / race.top * 100 : 0) + '%';
     setText('meterTxt', race.top > 0 && race.v >= race.top ? 'MAX SPEED!' : 'SPEEDING UP');
   } else {
-    fill.style.width = '0%'; setText('meterTxt', 'NEXT RACE IN ' + Math.max(1, Math.ceil(E.RESULT_TIME - phaseT)));
+    fill.style.width = '0%'; setText('meterTxt', 'BACK TO LOBBY IN ' + Math.max(1, Math.ceil(E.RESULT_TIME - phaseT)));
   }
 }
 function showResult() {
@@ -1313,7 +1367,7 @@ $('sheetBody').addEventListener('click', e => {
   else if (act === 'auto') buyAuto();
   else if (act === 'autoT') { S.autoOn = !S.autoOn; markDirty(); rerender(); }
   else if (act === 'slot') buySlot();
-  else if (act === 'reset') { if (resetArm) { try { localStorage.removeItem(KEY); } catch (er) { } S = JSON.parse(JSON.stringify(DEF)); S.tut = true; resetArm = false; recalc(); syncPets(); closeSheet(); buildWorld(0); startTap(); save(); toast('Fresh start! Good luck.'); } else { resetArm = true; rerender(); } }
+  else if (act === 'reset') { if (resetArm) { try { localStorage.removeItem(KEY); } catch (er) { } S = JSON.parse(JSON.stringify(DEF)); S.tut = true; resetArm = false; recalc(); syncPets(); closeSheet(); buildWorld(0); enterLobby(); save(); toast('Fresh start! Good luck.'); } else { resetArm = true; rerender(); } }
 });
 function togglePet(u) {
   const i = S.eq.indexOf(u);
@@ -1396,13 +1450,13 @@ function doRebirth() {
   for (let i = 0; i < 120; i++) { col.setHSL(rnd(0.85, 1.05) % 1, 1, 0.65); burstFx.spawn(rnd(-1, 1), rnd(1, 3), rnd(-1, 1), rnd(-6, 6), rnd(2, 10), rnd(-6, 6), rnd(1, 1.8), rnd(0.3, 0.6), col, 6); }
   const after = maxWorld();
   if (after > before) { teleport(after, `New world unlocked! Boost is now ×${fmtX(rebMult())}`); }
-  else { startTap(); showBanner('REBIRTH ' + S.reb, 'Boost ×' + fmtX(rebMult()), WORLDS.findIndex(W => W.req > S.reb) >= 0 ? `Next world at ${WORLDS.find(W => W.req > S.reb).req} rebirths` : ''); }
+  else { enterLobby(); showBanner('REBIRTH ' + S.reb, 'Boost ×' + fmtX(rebMult()), WORLDS.findIndex(W => W.req > S.reb) >= 0 ? `Next world at ${WORLDS.find(W => W.req > S.reb).req} rebirths` : ''); }
 }
 function teleport(w, sub) {
   closeSheet(); ui.fading = true; $('fade').classList.add('on');
   setTimeout(() => {
     S.world = w; S.seenWorld = Math.max(S.seenWorld, w); markDirty(); save();
-    buildWorld(w); startTap();
+    buildWorld(w); enterLobby();
     $('fade').classList.remove('on');
     setTimeout(() => { ui.fading = false; }, 200);
     showBanner('WORLD ' + (w + 1), WORLDS[w].name, sub || '×' + fmtX(Math.pow(E.W, w)) + ' wins per gate');
@@ -1411,6 +1465,7 @@ function teleport(w, sub) {
 
 /* ---------------- tutorial ---------------- */
 const TUT = [
+  { t: 'Walk around!', p: 'Drag on the screen or use the WASD keys to move. Press JUMP to jump. Walk onto a pad to open Pets, Trails and more. Walk to the START line to race.', ic: ['i-globe'] },
   { t: 'Tap to get fast!', p: 'Before each race you get 10 seconds. Tap the green button (or anywhere) as fast as you can. Every tap adds speed.', ic: ['i-hand'] },
   { t: 'Race and win!', p: 'Then you run on your own. Pass gates to earn wins. Beat the other racers for bonus wins!', ic: ['i-trophy'] },
   { t: 'Get stronger', p: 'Pets give more speed. Trails give more acceleration. Rebirth to unlock 10 worlds!', ic: ['i-paw', 'i-trail', 'i-reb'] },
@@ -1420,12 +1475,40 @@ function showTut(i = 0) {
   el.innerHTML = `<div class="card"><div class="ill">${s.ic.map(c => `<svg viewBox="0 0 24 24" style="color:${c === 'i-trophy' ? 'var(--win)' : c === 'i-paw' ? 'var(--pets)' : c === 'i-trail' ? '#d4a8ff' : c === 'i-reb' ? 'var(--reb)' : '#7dffa0'}"><use href="#${c}"/></svg>`).join('')}</div>
     <h2>${s.t}</h2><p>${s.p}</p><div class="steps">${TUT.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>
     <button class="btn" id="tutNext">${i < TUT.length - 1 ? 'Next' : "Let's race!"}</button></div>`;
-  $('tutNext').onclick = () => { ensureAudio(); if (i < TUT.length - 1) showTut(i + 1); else { el.hidden = true; ui.tut = false; S.tut = true; markDirty(); save(); startTap(); } };
+  $('tutNext').onclick = () => { ensureAudio(); if (i < TUT.length - 1) showTut(i + 1); else { el.hidden = true; ui.tut = false; S.tut = true; markDirty(); save(); enterLobby(); } };
   $('tutNext').focus({ preventScroll: true });
 }
 
 /* ---------------- input ---------------- */
-canvas.addEventListener('pointerdown', e => { e.preventDefault(); tapAt(e.clientX, e.clientY); });
+const joy = { on: false, id: null, sx: 0, sy: 0, x: 0, z: 0 };
+const keys = new Set();
+function joyEnd() { joy.on = false; joy.x = 0; joy.z = 0; $('joy').hidden = true; keys.clear(); }
+function moveVec() {
+  let x = joy.x + (keys.has('d') || keys.has('arrowright') ? 1 : 0) - (keys.has('a') || keys.has('arrowleft') ? 1 : 0);
+  let z = joy.z + (keys.has('s') || keys.has('arrowdown') ? 1 : 0) - (keys.has('w') || keys.has('arrowup') ? 1 : 0);
+  const l = Math.hypot(x, z); if (l > 1) { x /= l; z /= l; }
+  return { x, z };
+}
+canvas.addEventListener('pointerdown', e => {
+  e.preventDefault(); ensureAudio();
+  if (blocked()) return;
+  if (phase === 'tap' || phase === 'result') { tapAt(e.clientX, e.clientY); return; }
+  joy.on = true; joy.id = e.pointerId; joy.sx = e.clientX; joy.sy = e.clientY; joy.x = 0; joy.z = 0;
+  try { canvas.setPointerCapture(e.pointerId); } catch (er) { }
+  const j = $('joy'); j.style.left = e.clientX + 'px'; j.style.top = e.clientY + 'px'; j.hidden = false; $('joyKnob').style.transform = '';
+});
+canvas.addEventListener('pointermove', e => {
+  if (!joy.on || e.pointerId !== joy.id) return;
+  let dx = (e.clientX - joy.sx) / 46, dy = (e.clientY - joy.sy) / 46; const l = Math.hypot(dx, dy); if (l > 1) { dx /= l; dy /= l; }
+  joy.x = Math.abs(dx) < 0.15 ? 0 : dx; joy.z = Math.abs(dy) < 0.15 ? 0 : dy;
+  $('joyKnob').style.transform = `translate(${dx * 34}px,${dy * 34}px)`;
+});
+const joyUp = e => { if (e.pointerId === joy.id) { joy.on = false; joy.x = 0; joy.z = 0; $('joy').hidden = true; } };
+canvas.addEventListener('pointerup', joyUp); canvas.addEventListener('pointercancel', joyUp);
+document.addEventListener('keydown', e => { const k = e.key.toLowerCase(); if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k) && !ui.sheet && !ui.tut && !ui.hatch) { keys.add(k); if (k.startsWith('arrow')) e.preventDefault(); } });
+document.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
+addEventListener('blur', () => keys.clear());
+$('jumpBtn').addEventListener('pointerdown', e => { e.preventDefault(); ensureAudio(); jump(); });
 $('tapBtn').addEventListener('pointerdown', e => { e.preventDefault(); const r = e.currentTarget.getBoundingClientRect(); tapAt(e.clientX || r.left + r.width / 2, r.top); });
 $('tapBtn').addEventListener('click', e => { if (e.detail === 0) { const r = e.currentTarget.getBoundingClientRect(); tapAt(r.left + r.width / 2, r.top); } });
 document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => openSheet(b.dataset.open)));
@@ -1439,7 +1522,7 @@ function syncMute() { $('muteUse').setAttribute('href', S.muted ? '#i-mute' : '#
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { if (ui.hatch) closeHatch(); else if (ui.sheet) closeSheet(); return; }
   if ((e.code === 'Space' || e.key === ' ') && !ui.sheet && !ui.tut && !ui.hatch) {
-    e.preventDefault(); const r = $('tapBtn').getBoundingClientRect(); tapAt(r.left + r.width * rnd(0.3, 0.7), r.top);
+    e.preventDefault(); ensureAudio(); if (phase === 'lobby' || phase === 'race') { jump(); return; } const r = $('tapBtn').getBoundingClientRect(); tapAt(r.left + r.width * rnd(0.3, 0.7), r.top);
   }
 });
 
@@ -1460,9 +1543,13 @@ function placeCamera(sf, t, dt) {
   const portrait = aspect < 0.8;
   camBase.set(portrait ? 1.4 : 2.8, portrait ? 4.6 : 4.0, portrait ? 9.2 : 7.6);
   camBase.z += sf * 1.6; camBase.y += sf * 0.5;
+  const k5 = Math.min(1, dt * 5);
+  camOff.x += ((phase === 'lobby' ? pl.x : pl.x * 0.6) - camOff.x) * k5; camOff.z += (pl.z - camOff.z) * k5;
+  camOff.l += ((phase === 'lobby' ? 1 : 0) - camOff.l) * k5;
+  camBase.x += camOff.x; camBase.z += camOff.z + camOff.l * 4.5; camBase.y += camOff.l * 2.6;
   const shake = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : sf * 0.05;
   camera.position.set(camBase.x + Math.sin(t * 37) * shake, camBase.y + Math.cos(t * 41) * shake, camBase.z);
-  camLook.set(0, portrait ? 1.2 : 1.6, -10);
+  camLook.set(camOff.x, portrait ? 1.2 : 1.6, -10 + camOff.z);
   camera.lookAt(camLook);
   const fov = baseFov + sf * 12;
   if (Math.abs(camera.fov - fov) > 0.05) {
@@ -1486,8 +1573,26 @@ function update(dt) {
   if (!frozen) {
     if (phase === 'tap') { phaseT += dt; autoTap(dt); if (phaseT >= E.TAP_TIME) startRace(); }
     else if (phase === 'race') { phaseT += dt; stepRace(dt); }
-    else if (phase === 'result') { phaseT += dt; if (phaseT >= E.RESULT_TIME) startTap(); }
+    else if (phase === 'result') { phaseT += dt; if (phaseT >= E.RESULT_TIME) enterLobby(); }
   }
+  // free movement
+  const mv = moveVec(); let moving = false;
+  if (!frozen) {
+    if (phase === 'lobby') {
+      if (mv.x || mv.z) { moving = true; pl.x = clamp(pl.x + mv.x * 9 * dt, -18, 18); pl.z = clamp(pl.z + mv.z * 9 * dt, -2.5, 28); pl.face = Math.atan2(-mv.x, -mv.z); }
+      let ins = null;
+      for (const st of STATIONS) if (Math.hypot(pl.x - st.x, pl.z - st.z) < 2.5) ins = st.k;
+      if (ins && ins !== pl.inside) { pl.inside = ins; joyEnd(); openSheet(ins); } else if (!ins) pl.inside = null;
+      if (pl.z < 1.3 && Math.abs(pl.x) < 5.6 && !ui.sheet) startTap();
+    } else if (phase === 'race') pl.x = clamp(pl.x + mv.x * 7 * dt, -4.7, 4.7);
+    if (pl.y > 0 || pl.vy > 0) { pl.vy -= 30 * dt; pl.y += pl.vy * dt; if (pl.y <= 0) { pl.y = 0; pl.vy = 0; } }
+  }
+  runner.position.set(pl.x, pl.y, pl.z);
+  { const tf = phase === 'lobby' ? pl.face : 0; let dr = tf - runner.rotation.y; dr = Math.atan2(Math.sin(dr), Math.cos(dr)); runner.rotation.y += dr * Math.min(1, dt * 12); }
+  runner.userData.shadow.position.y = 0.04 - pl.y;
+  if (moving && phase === 'lobby') { trailFx._acc2 = (trailFx._acc2 || 0) + dt * 30; const n2 = Math.floor(trailFx._acc2); trailFx._acc2 -= n2; if (n2) spawnTrail(n2, 0.4); }
+  if (phase === 'race' || phase === 'result') { lobby.position.z += V * dt; if (lobby.position.z > 70) lobby.visible = false; }
+  for (const st of STATIONS) { st.icon.rotation.y += dt * 1.2; st.icon.position.y = 2.3 + Math.sin(clock * 2 + st.x) * 0.2; }
   // visual speed
   const targetV = phase === 'race' && !frozen ? 8 + 7 * Math.log10(1 + race.v) : 0;
   V += (targetV - V) * Math.min(1, dt * (phase === 'race' ? 8 : 2.5));
@@ -1500,6 +1605,7 @@ function update(dt) {
   for (const p of propsGroup.children) {
     p.position.z += V * dt;
     if (p.position.z > PROP_NEAR) { p.position.z -= PROP_SPAN; placeProp(p, p.userData.side); }
+    p.visible = phase === 'race' || phase === 'result' || !(p.position.z > -4 && Math.abs(p.position.x) < 21);
   }
   // start arch
   if (startArch.visible) { if (phase !== 'tap') startArch.userData.z += V * dt; startArch.position.z = startArch.userData.z; if (startArch.userData.z > 30) startArch.visible = false; }
@@ -1524,12 +1630,12 @@ function update(dt) {
   }
   // runner animation
   const R = runner.userData;
-  animRunner(R, phase === 'race' && V > 1, sf, dt);
+  animRunner(R, (phase === 'race' && V > 1) || moving, sf, dt);
   // rival racers
   {
     const vE = Math.max(race.v, race.top * 0.3, 1), Vf2 = 8 + 7 * Math.log10(1 + race.v);
     for (const bt of BOTS) {
-      const z = phase === 'tap' ? 0 : Math.max(-150, Math.min(4, -((bt.dist - race.dist) / vE) * Vf2));
+      const z = (phase === 'tap' || phase === 'lobby') ? 0 : Math.max(-150, Math.min(4, -((bt.dist - race.dist) / vE) * Vf2));
       bt.m.position.z += (z - bt.m.position.z) * Math.min(1, dt * 6);
       animRunner(bt.m.userData, phase === 'race' && bt.v > 0, sf, dt);
     }
@@ -1538,7 +1644,7 @@ function update(dt) {
   petMeshes.forEach((m, i) => {
     const s = PET_SPOTS[i] || PET_SPOTS[0];
     const lag = phase === 'race' ? sf * 0.6 : 0;
-    m.position.set(s[0], s[1] + Math.sin(clock * 3 + i * 1.7) * 0.18, s[2] + lag + Math.sin(clock * 2 + i) * 0.1);
+    m.position.set(pl.x + s[0], pl.y * 0.6 + s[1] + Math.sin(clock * 3 + i * 1.7) * 0.18, pl.z + s[2] + lag + Math.sin(clock * 2 + i) * 0.1);
     m.rotation.y = Math.sin(clock * 1.5 + i) * 0.25;
     m.rotation.z = phase === 'race' ? Math.sin(R.phase + i) * 0.08 : 0;
     if (m.userData.wings) m.userData.wings.forEach((w, k) => { w.rotation.z = (k ? -1 : 1) * (0.3 + Math.sin(clock * 14) * 0.35); });
@@ -1578,7 +1684,7 @@ resize();
 syncMute();
 syncPets();
 buildWorld(S.world);
-startTap();
+enterLobby();
 updateHUD(); updateDots();
 if (!S.tut) showTut(0);
 else showBanner('WORLD ' + (S.world + 1), WORLDS[S.world].name, 'Welcome back!');
