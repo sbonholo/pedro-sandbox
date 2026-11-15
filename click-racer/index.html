@@ -46,14 +46,15 @@ svg{display:block}
 @keyframes bump{50%{transform:scale(1.08)}}
 .sq{width:48px;height:48px;border-radius:16px;background:rgba(13,21,48,.8);border:3px solid rgba(255,255,255,.92);box-shadow:0 4px 0 rgba(0,0,0,.3);display:grid;place-items:center;flex:none}
 .sq svg{width:24px;height:24px}
-.stats{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:8px}
+.hud-mid{flex:1;min-height:0;display:flex;justify-content:space-between;align-items:flex-end;padding-block:8px;pointer-events:none}
+.stats{display:flex;flex-direction:column;gap:6px;width:108px}
 .stat{min-width:0;display:flex;flex-direction:column;justify-content:center;min-height:46px;padding:2px 10px;border-radius:14px;background:rgba(13,21,48,.72);border:2px solid rgba(255,255,255,.35);text-align:left}
 .stat small{font:700 10px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .stat b{font-family:var(--display);font-weight:400;font-size:19px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stat.spd b{color:#ffb15c}.stat.acc b{color:#d4a8ff}.stat.wld b{color:#7fe9f5}
-.center{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 128px);text-align:center;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:0}
+.stat.wld b{white-space:normal;font-size:15px}.stat.plc b{color:#ffe14d}.stat.spd b{color:#ffb15c}.stat.acc b{color:#d4a8ff}.stat.wld b{color:#7fe9f5}
+.center{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 68px);text-align:center;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:0}
 .center .phase{font-size:26px;color:#fff}
-.center .big{font-size:64px;line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.center .big{font-size:54px;line-height:1;color:#fff;font-variant-numeric:tabular-nums}
 .center .sub{font-size:19px;color:#fff;margin-top:4px}
 .center .next{font:700 13px var(--body);color:#fff;background:rgba(13,21,48,.55);padding:4px 10px;border-radius:10px;margin-top:6px}
 .center.go .big{animation:pop .4s}
@@ -61,9 +62,9 @@ svg{display:block}
 .meter{position:relative;height:24px;border-radius:12px;background:rgba(13,21,48,.78);border:2px solid rgba(255,255,255,.85);overflow:hidden}
 .meter i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#38d86a,#ffd23f,#ff5d5d);border-radius:10px}
 .meter span{position:absolute;inset:0;display:grid;place-items:center;font:400 14px var(--display);letter-spacing:.06em;text-shadow:0 1px 0 #000a}
-.menu{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.mbtn{position:relative;height:62px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:400 13px var(--display);letter-spacing:.03em;text-shadow:0 1px 0 #0008;border:3px solid rgba(255,255,255,.9);transition:transform .08s}
-.mbtn svg{width:26px;height:26px}
+.menu{display:flex;flex-direction:column;gap:8px}
+.mbtn{position:relative;width:66px;height:56px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:400 13px var(--display);letter-spacing:.03em;text-shadow:0 1px 0 #0008;border:3px solid rgba(255,255,255,.9);transition:transform .08s}
+.mbtn svg{width:24px;height:24px}
 .mbtn:active{transform:translateY(3px)}
 .mbtn.pets{background:var(--pets);box-shadow:0 5px 0 var(--pets-d)}
 .mbtn.trails{background:var(--trail);box-shadow:0 5px 0 var(--trail-d)}
@@ -86,7 +87,7 @@ svg{display:block}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,-30%) scale(.7)}15%{opacity:1;transform:translate(-50%,-60%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-190%) scale(1)}}
 
 /* result card */
-#result{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 132px);transform:translateX(-50%);width:min(340px,calc(100% - 32px));background:rgba(21,36,81,.94);border:4px solid #fff;border-radius:24px;padding:16px 18px;text-align:center;box-shadow:0 8px 0 rgba(0,0,0,.3);animation:pop .35s}
+#result{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translateX(-50%);width:min(340px,calc(100% - 32px));background:rgba(21,36,81,.94);border:4px solid #fff;border-radius:24px;padding:16px 18px;text-align:center;box-shadow:0 8px 0 rgba(0,0,0,.3);animation:pop .35s}
 #result h3{margin:0;font:400 30px var(--display)}
 #result .rr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:12px 0}
 #result .rr div{background:var(--panel2);border-radius:14px;padding:8px 4px}
@@ -94,7 +95,10 @@ svg{display:block}
 #result .rr b{font:400 20px var(--display)}
 #result .tip{font:600 14px/1.35 var(--body);color:#fff;background:rgba(255,255,255,.08);border-radius:12px;padding:8px 10px}
 #result .tip b{color:var(--win)}
-#result .btn{margin-top:12px;width:100%}
+#result .bonus{font:400 17px var(--display);color:var(--win);margin-bottom:8px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tab{min-height:46px;border-radius:14px;background:var(--ink);border:2px solid rgba(255,255,255,.2);font:400 17px var(--display);letter-spacing:.03em}
+.tab.on{background:var(--pets);border-color:#fff;box-shadow:0 4px 0 var(--pets-d);text-shadow:0 1px 0 #0007}
 
 /* buttons */
 .btn{min-height:48px;padding:0 16px;border-radius:14px;font:400 18px var(--display);letter-spacing:.03em;color:#fff;background:var(--go);box-shadow:0 5px 0 var(--go-d);border:3px solid #fff;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-shadow:0 1px 0 #0007;transition:transform .08s}
@@ -179,7 +183,7 @@ h3.t{margin:0;font:400 22px var(--display)}
 .danger.arm{border-color:var(--bad);color:#fff;background:rgba(255,93,93,.2)}
 
 /* hatch */
-#hatch{position:absolute;inset:0;z-index:30;background:radial-gradient(circle at 50% 42%,rgba(60,90,200,.55),rgba(5,10,30,.9));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#hatch{position:absolute;inset:0;z-index:30;background:radial-gradient(circle at 50% 42%,#2b46a8,#0a1130);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 #hatch .eggs{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 #hatch .he{width:min(28vw,130px);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
 #hatch .he svg{width:100%;height:auto}
@@ -195,7 +199,7 @@ h3.t{margin:0;font:400 22px var(--display)}
 #flash.on{animation:flash .5s}
 @keyframes flash{0%{opacity:.95}100%{opacity:0}}
 
-#banner{opacity:0;position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 120px);z-index:15;text-align:center;pointer-events:none;padding:0 16px}
+#banner{opacity:0;position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 84px);z-index:15;text-align:center;pointer-events:none;padding:0 16px}
 #banner .k{font:400 18px var(--display);letter-spacing:.12em;color:var(--win)}
 #banner .t{font:400 46px/1 var(--display);text-wrap:balance}
 #banner .s{font:700 15px var(--body);margin-top:6px}
@@ -212,7 +216,7 @@ h3.t{margin:0;font:400 22px var(--display)}
 #tut .ill{display:flex;justify-content:center;gap:10px;height:70px;align-items:center}
 #tut .ill svg{width:62px;height:62px}
 
-#toast{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 190px);transform:translate(-50%,20px);z-index:50;max-width:calc(100% - 32px);background:#fff;color:#0d1530;font:700 15px/1.3 var(--body);padding:12px 16px;border-radius:16px;box-shadow:0 6px 0 rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;text-align:center}
+#toast{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 150px);transform:translate(-50%,20px);z-index:50;max-width:calc(100% - 32px);background:#fff;color:#0d1530;font:700 15px/1.3 var(--body);padding:12px 16px;border-radius:16px;box-shadow:0 6px 0 rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;text-align:center}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 #fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:60;transition:opacity .35s}
 #fade.on{opacity:1}
@@ -224,11 +228,12 @@ h3.t{margin:0;font:400 22px var(--display)}
   .fl{animation-duration:.5s}
 }
 @media (max-height:640px){
-  .center{top:calc(env(safe-area-inset-top,0px) + 112px)}
-  .center .big{font-size:48px}
+  .center .big{font-size:42px}
+  .stat{min-height:38px}
   .tap{height:70px;font-size:32px}
-  .mbtn{height:54px}
-  .mbtn svg{width:22px;height:22px}
+  .mbtn{height:46px;font-size:11px}
+  .mbtn svg{width:20px;height:20px}
+  .menu{gap:6px}
 }
 </style>
 
@@ -241,7 +246,17 @@ h3.t{margin:0;font:400 22px var(--display)}
         <button class="pill reb d" id="rebPill" aria-label="Rebirths"><svg class="ic" viewBox="0 0 24 24"><use href="#i-reb"/></svg><span id="rebTxt">0</span></button>
         <button class="sq" id="muteBtn" aria-label="Sound on"><svg viewBox="0 0 24 24"><use id="muteUse" href="#i-sound"/></svg></button>
       </div>
+    </div>
+    <div class="hud-mid">
+      <nav class="menu" aria-label="Menus">
+        <button class="mbtn pets" data-open="pets"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>Pets<span class="dot" hidden></span></button>
+        <button class="mbtn trails" data-open="trails"><svg viewBox="0 0 24 24"><use href="#i-trail"/></svg>Trails<span class="dot" hidden></span></button>
+        <button class="mbtn worlds" data-open="worlds"><svg viewBox="0 0 24 24"><use href="#i-globe"/></svg>Worlds<span class="dot" hidden></span></button>
+        <button class="mbtn rebirth" data-open="rebirth"><svg viewBox="0 0 24 24"><use href="#i-reb"/></svg>Rebirth<span class="dot" hidden></span></button>
+        <button class="mbtn shop" data-open="shop"><svg viewBox="0 0 24 24"><use href="#i-bag"/></svg>Shop<span class="dot" hidden></span></button>
+      </nav>
       <div class="stats">
+        <div class="stat plc"><small>Place</small><b id="placeTxt">- / 5</b></div>
         <div class="stat spd"><small>Speed / tap</small><b id="tapTxt">+1</b></div>
         <div class="stat acc"><small>Accel</small><b id="accTxt">3</b></div>
         <button class="stat wld" id="worldBtn"><small id="worldNum">World 1</small><b id="worldName">Grass Fields</b></button>
@@ -255,13 +270,6 @@ h3.t{margin:0;font:400 22px var(--display)}
     </div>
     <div class="hud-bottom">
       <div class="meter"><i id="meterFill"></i><span id="meterTxt">TIME</span></div>
-      <nav class="menu" aria-label="Menus">
-        <button class="mbtn pets" data-open="pets"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>Pets<span class="dot" hidden></span></button>
-        <button class="mbtn trails" data-open="trails"><svg viewBox="0 0 24 24"><use href="#i-trail"/></svg>Trails<span class="dot" hidden></span></button>
-        <button class="mbtn worlds" data-open="worlds"><svg viewBox="0 0 24 24"><use href="#i-globe"/></svg>Worlds<span class="dot" hidden></span></button>
-        <button class="mbtn rebirth" data-open="rebirth"><svg viewBox="0 0 24 24"><use href="#i-reb"/></svg>Rebirth<span class="dot" hidden></span></button>
-        <button class="mbtn shop" data-open="shop"><svg viewBox="0 0 24 24"><use href="#i-bag"/></svg>Shop<span class="dot" hidden></span></button>
-      </nav>
       <button class="tap ready" id="tapBtn"><span id="tapLabel">TAP!</span><small id="tapSmall">or tap the screen</small></button>
     </div>
   </div>
@@ -388,7 +396,7 @@ const GATE_COLORS = ['#ff4757', '#ffa502', '#2ed573', '#1e90ff', '#a55eea', '#ff
 
 /* ---------------- save / load ---------------- */
 const KEY = 'pedro-click-racer-v1';
-const DEF = { v: 1, wins: 0, reb: 0, world: 0, seenWorld: 0, pets: [], eq: [], uid: 1, trails: [], trail: -1, auto: 0, autoOn: true, slots: 3, fin: [], best: 0, tut: false, muted: false, races: 0, earned: 0 };
+const DEF = { v: 1, wins: 0, reb: 0, world: 0, seenWorld: 0, pets: [], eq: [], uid: 1, trails: [], trail: -1, auto: 0, autoOn: true, slots: 3, fin: [], best: 0, tut: false, muted: false, races: 0, earned: 0, firsts: 0 };
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
@@ -561,7 +569,7 @@ const ground = new THREE.Mesh(new THREE.PlaneGeometry(260, 480), groundMat);
 ground.rotation.x = -Math.PI / 2; ground.position.set(0, 0, -200);
 scene.add(ground);
 const trackMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
-const track = new THREE.Mesh(new THREE.PlaneGeometry(7, 480), trackMat);
+const track = new THREE.Mesh(new THREE.PlaneGeometry(11, 480), trackMat);
 track.rotation.x = -Math.PI / 2; track.position.set(0, 0.02, -200);
 scene.add(track);
 const TILE = 8; // world units per texture tile
@@ -593,7 +601,7 @@ function trackTexture(W) {
     g.fillStyle = (y / 32) % 2 ? '#ffffff' : W.edge; g.fillRect(0, y, 12, 32); g.fillRect(116, y, 12, 32);
   }
   // dashed center line
-  g.fillStyle = 'rgba(255,255,255,.85)'; g.fillRect(61, 40, 6, 60); g.fillRect(61, 168, 6, 60);
+  g.fillStyle = 'rgba(255,255,255,.55)'; for (const x of [40, 62, 84]) { g.fillRect(x, 40, 3, 60); g.fillRect(x, 168, 3, 60); }
   return canvasTex(c, 1, 480 / TILE);
 }
 function skyTexture(W) {
@@ -703,7 +711,7 @@ function buildProps(W) {
 }
 function placeProp(p, side) {
   const far = Math.random() < 0.45;
-  p.position.x = side * (far ? rnd(14, 34) : rnd(6.2, 12));
+  p.position.x = side * (far ? rnd(16, 36) : rnd(8.5, 14));
   p.rotation.y = rnd(0, Math.PI * 2);
   const s = rnd(0.8, 1.35); p.scale.set(s, s, s);
   p.userData.side = side;
@@ -808,14 +816,14 @@ for (let i = 0; i < LINE_N; i++) {
 }
 
 /* ---- runner ---- */
-function buildRunner() {
+function buildRunner(SH = '#2f7dff', CAP = '#ff3b3b', PA = '#1d2b4f', SK = '#f2c79a', label = 'P') {
   const r = new THREE.Group();
-  const SK = '#f2c79a', SH = '#2f7dff', PA = '#1d2b4f', SO = '#ffffff', CAP = '#ff3b3b';
+  const SO = '#ffffff';
   const body = new THREE.Group(); r.add(body);
   const torso = part(GEO.box, SH, 1.05, 1.15, 0.6, 0, 2.1, 0); body.add(torso);
   // back number
   const nc = mkCanvas(128, 128), ng = nc.getContext('2d');
-  ng.fillStyle = '#ffffff'; ng.font = '400 92px "Lilita One", Arial, sans-serif'; ng.textAlign = 'center'; ng.textBaseline = 'middle'; ng.fillText('P', 64, 70);
+  ng.fillStyle = '#ffffff'; ng.font = '400 92px "Lilita One", Arial, sans-serif'; ng.textAlign = 'center'; ng.textBaseline = 'middle'; ng.fillText(label, 64, 70);
   const ntex = new THREE.CanvasTexture(nc); ntex.colorSpace = THREE.SRGBColorSpace;
   const num = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.7), new THREE.MeshBasicMaterial({ map: ntex, transparent: true }));
   num.position.set(0, 2.15, 0.31); body.add(num);
@@ -843,6 +851,47 @@ function buildRunner() {
   return r;
 }
 const runner = buildRunner(); scene.add(runner);
+function animRunner(R, run, sf, dt) {
+  R.kick = Math.max(0, (R.kick || 0) - dt * 5);
+  if (run) {
+    R.phase += dt * (9 + sf * 9);
+    const s = Math.sin(R.phase), amp = 0.9 + sf * 0.25;
+    R.legL.rotation.x = s * amp; R.legR.rotation.x = -s * amp;
+    R.armL.rotation.x = -s * amp * 0.9; R.armR.rotation.x = s * amp * 0.9;
+    R.body.position.y = Math.abs(Math.cos(R.phase)) * 0.18;
+    R.body.rotation.x = -0.12 - sf * 0.14;
+  } else {
+    R.phase += dt * 3;
+    const k = R.kick;
+    R.legL.rotation.x = 0.25 + k * 0.5; R.legR.rotation.x = -0.35 - k * 0.3;
+    R.armL.rotation.x = -0.4 - k * 0.6 + Math.sin(R.phase) * 0.05; R.armR.rotation.x = 0.5 + k * 0.4;
+    R.body.position.y = -0.08 - k * 0.12 + Math.sin(R.phase * 1.3) * 0.03;
+    R.body.rotation.x = -0.18;
+  }
+}
+/* ---- rival racers ---- */
+function nameTag(name) {
+  const c = mkCanvas(256, 64), g = c.getContext('2d');
+  g.fillStyle = 'rgba(13,21,48,.8)'; roundRect(g, 4, 4, 248, 56, 22); g.fill();
+  g.font = '400 36px "Lilita One", Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#ffffff'; g.fillText(name, 128, 34);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false }));
+  sp.scale.set(1.5, 0.38, 1); sp.position.y = 4.15; return sp;
+}
+const BOTS = [['Zoomy', '#ff5f5f', '#ffd23f', -2.9, 0.62], ['Dash', '#38d86a', '#ffffff', 2.9, 0.8], ['Blaze', '#ff9a2e', '#2a2a2a', -4.6, 0.95], ['Turbo', '#a45cff', '#3df2ff', 4.6, 1.08]].map(([name, sh, cap, x, skill]) => {
+  const m = buildRunner(sh, cap, '#2a2a3a', '#e8b98a', name[0]);
+  m.scale.setScalar(0.92); m.position.x = x; m.userData.phase = Math.random() * 6;
+  const tag = nameTag(name); m.add(tag);
+  scene.add(m);
+  return { name, m, tag, skill, top: 0, a: 1, dist: 0, v: 0 };
+});
+function kin(top, a, t) {
+  if (top <= 0) return [0, 0];
+  const tr = top / a;
+  return [Math.min(top, a * t), t <= tr ? 0.5 * a * t * t : top * t - top * top / (2 * a)];
+}
+const ORD = ['1st', '2nd', '3rd', '4th', '5th'];
+const placeNow = () => 1 + BOTS.filter(b => b.dist > race.dist).length;
 
 /* ---- pets 3D ---- */
 const PET_SPOTS = [[-1.75, 1.7, 0.6], [1.75, 1.7, 0.6], [-1.25, 3.4, 1.1], [1.25, 3.4, 1.1], [0, 4.6, 0.5]];
@@ -884,11 +933,11 @@ function syncPets() {
 function buildArch() {
   const g = new THREE.Group();
   const pm = new THREE.MeshLambertMaterial({ color: 0xff4757 });
-  g.add(part(GEO.box, pm, 0.6, 5.6, 0.6, -3.9, 2.8, 0));
-  g.add(part(GEO.box, pm, 0.6, 5.6, 0.6, 3.9, 2.8, 0));
-  g.add(part(GEO.box, pm, 8.6, 0.7, 0.7, 0, 5.6, 0));
-  g.add(part(GEO.box, mat('#ffffff'), 0.7, 0.3, 0.7, -3.9, 0.15, 0));
-  g.add(part(GEO.box, mat('#ffffff'), 0.7, 0.3, 0.7, 3.9, 0.15, 0));
+  g.add(part(GEO.box, pm, 0.6, 5.6, 0.6, -5.9, 2.8, 0));
+  g.add(part(GEO.box, pm, 0.6, 5.6, 0.6, 5.9, 2.8, 0));
+  g.add(part(GEO.box, pm, 12.6, 0.7, 0.7, 0, 5.6, 0));
+  g.add(part(GEO.box, mat('#ffffff'), 0.7, 0.3, 0.7, -5.9, 0.15, 0));
+  g.add(part(GEO.box, mat('#ffffff'), 0.7, 0.3, 0.7, 5.9, 0.15, 0));
   const c = mkCanvas(512, 160); const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
   const banner = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 2.06), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
   banner.position.set(0, 4.15, 0.37); g.add(banner);
@@ -950,15 +999,16 @@ function buildWorld(w) {
 
 /* ---------------- game state ---------------- */
 let phase = 'tap', phaseT = 0, built = 0, tapCombo = 0, autoAcc = 0, lastTap = 0;
-const race = { t: 0, v: 0, dist: 0, next: 0, won: 0, top: 0, a: 1, finished: false, newBest: false };
+const race = { t: 0, v: 0, dist: 0, next: 0, won: 0, top: 0, a: 1, finished: false, newBest: false, place: 1, bonus: 0 };
 let V = 0; // visual scroll speed (units/s)
-const ui = { sheet: null, hatch: false, tut: false, fading: false };
+const ui = { sheet: null, hatch: false, tut: false, fading: false, petTab: 'hatch' };
 const blocked = () => !!(ui.sheet || ui.hatch || ui.tut || ui.fading);
 let lastTick = 99;
 
 function startTap() {
   phase = 'tap'; phaseT = 0; built = 0; tapCombo = 0; autoAcc = 0; lastTick = 99;
   race.t = 0; race.v = 0; race.dist = 0; race.next = 0; race.won = 0; race.top = 0; race.finished = false;
+  for (const bt of BOTS) { bt.dist = 0; bt.v = 0; }
   freeArches();
   startArch.visible = true; startArch.userData.z = -5;
   $('result').hidden = true;
@@ -968,6 +1018,7 @@ function startTap() {
 function startRace() {
   phase = 'race'; phaseT = 0;
   race.t = 0; race.v = 0; race.dist = 0; race.next = 0; race.won = 0; race.top = built; race.a = D.accel; race.finished = false; race.newBest = false;
+  for (const bt of BOTS) { bt.top = D.tapPower * (45 + autoRate() * E.TAP_TIME) * bt.skill * rnd(0.85, 1.15); bt.a = D.accel * rnd(0.8, 1.1); }
   SFX.go();
   const c = $('center'); c.classList.remove('go'); void c.offsetWidth; c.classList.add('go');
   setTapBtn('RACING!', 'watch your speed', true);
@@ -975,6 +1026,10 @@ function startRace() {
 function endRace() {
   phase = 'result'; phaseT = 0;
   S.races++;
+  race.place = placeNow();
+  race.bonus = Math.round(race.won * ([0.5, 0.25, 0.1][race.place - 1] || 0));
+  S.wins += race.bonus; S.earned += race.bonus;
+  if (race.place === 1) S.firsts = (S.firsts || 0) + 1;
   if (race.dist > S.best) { S.best = race.dist; race.newBest = S.races > 1; }
   markDirty();
   showResult();
@@ -989,6 +1044,8 @@ function stepRace(dt) {
     race.v = Math.min(top, a * race.t);
     race.dist = race.t <= tr ? 0.5 * a * race.t * race.t : top * race.t - top * top / (2 * a);
   }
+  const fin = gateDist(S.world, 19);
+  for (const bt of BOTS) { const k = kin(bt.top, bt.a, race.t); bt.v = k[1] >= fin ? 0 : k[0]; bt.dist = Math.min(fin, k[1]); }
   while (race.next < 20 && race.dist >= gateDist(S.world, race.next)) passGate();
   if (race.finished || race.t >= E.RACE_TIME) endRace();
 }
@@ -1081,6 +1138,7 @@ function updateHUD() {
   setText('accTxt', fmt(D.accel));
   setText('worldNum', 'World ' + (S.world + 1));
   setText('worldName', WORLDS[S.world].name);
+  setText('placeTxt', phase === 'race' ? ORD[placeNow() - 1] + ' / 5' : phase === 'result' ? ORD[race.place - 1] + ' / 5' : '- / 5');
   const fill = $('meterFill');
   if (phase === 'tap') {
     const left = Math.max(0, E.TAP_TIME - phaseT);
@@ -1113,12 +1171,11 @@ function showResult() {
   else if (race.finished) tip = '<b>World complete!</b> Rebirth to unlock the next world.';
   else if (!reached) tip = 'You never hit max speed. Get a <b>trail</b> for more acceleration!';
   else tip = 'You hit max speed. Hatch <b>pets</b> for more speed per tap!';
-  r.innerHTML = `<h3 class="d">${race.finished ? 'WORLD COMPLETE!' : race.newBest ? 'NEW BEST!' : 'RACE OVER'}</h3>
-    <div class="rr"><div><small>Distance</small><b>${fmt(race.dist)} m</b></div><div><small>Gates</small><b>${race.next}/20</b></div><div><small>Wins</small><b style="color:var(--win)">+${fmt(race.won)}</b></div></div>
-    <div class="tip">${tip}</div>
-    <button class="btn" id="nextBtn">Next race</button>`;
+  r.innerHTML = `<h3 class="d">${race.finished ? 'WORLD COMPLETE!' : ORD[race.place - 1].toUpperCase() + ' PLACE!'}</h3>
+    <div class="rr"><div><small>Distance</small><b>${fmt(race.dist)} m</b></div><div><small>Gates</small><b>${race.next}/20</b></div><div><small>Wins</small><b style="color:var(--win)">+${fmt(race.won + race.bonus)}</b></div></div>
+    ${race.bonus ? `<div class="bonus">${ORD[race.place - 1]} place bonus +${fmt(race.bonus)} wins${race.newBest ? ' · New best!' : ''}</div>` : ''}
+    <div class="tip">${tip}</div>`;
   r.hidden = false;
-  $('nextBtn').onclick = () => { ensureAudio(); startTap(); };
 }
 let bannerT = null;
 function showBanner(k, t, s) {
@@ -1172,16 +1229,17 @@ function renderPets() {
     const eq = S.eq.includes(pt.u), R = RAR[petRar(pt.p)];
     return `<button class="pet${eq ? ' eq' : ''}" style="--rc:${R.color}" data-uid="${pt.u}" aria-pressed="${eq}">${eq ? `<span class="ck">${ICON('i-check')}</span>` : ''}${petSVG(pt.p)}<b>${petDef(pt.p)[0]}</b><span>×${fmtX(petMult(pt.p))}</span></button>`;
   }).join('');
-  $('sheetBody').innerHTML = `
+  const boost = `<div class="card"><div class="boostline"><div><div class="lbl">Pet speed boost</div><div class="v">×${fmtX(D.petBoost)}</div></div><div class="sp"></div><div class="lbl">Equipped ${S.eq.length}/${S.slots}</div><button class="btn sm alt" data-act="best">Equip best</button></div></div>`;
+  const tabs = `<div class="tabs"><button class="tab${ui.petTab === 'hatch' ? ' on' : ''}" data-act="tab" data-t="hatch">Hatch eggs</button><button class="tab${ui.petTab === 'bag' ? ' on' : ''}" data-act="tab" data-t="bag">My pets (${S.pets.length})</button></div>`;
+  $('sheetBody').innerHTML = tabs + (ui.petTab === 'hatch' ? `
     <div class="card egg">
       <div class="art">${eggSVG(w)}</div>
-      <div><h3 class="t">${WORLDS[w].eggName}</h3><p class="muted">Pets give you more speed every tap.</p></div>
+      <div><h3 class="t">${WORLDS[w].eggName}</h3><p class="muted">Pets give you more speed every tap. New worlds have stronger eggs.</p></div>
       <div style="grid-column:1/-1"><div class="odds">${odds}</div>
       <div class="btns"><button class="btn" data-act="h1">Hatch 1 ${winsTag(cost)}</button><button class="btn" data-act="h3">Hatch 3 ${winsTag(cost * 3)}</button></div></div>
-    </div>
-    <div class="card"><div class="boostline"><div><div class="lbl">Pet speed boost</div><div class="v">×${fmtX(D.petBoost)}</div></div><div class="sp"></div><div class="lbl">Equipped ${S.eq.length}/${S.slots}</div><button class="btn sm alt" data-act="best">Equip best</button></div></div>
+    </div>${boost}` : `${boost}
     ${S.pets.length ? `<div class="lbl">Your pets (${S.pets.length}/${E.BAG}) · tap to equip</div><div class="petgrid">${cards}</div>
-    <button class="danger" data-act="trash">Trash pets weaker than your team</button>` : `<p class="muted">No pets yet. Hatch an egg to get your first pet!</p>`}`;
+    <button class="danger" data-act="trash">Trash pets weaker than your team</button>` : `<p class="muted">No pets yet. Hatch an egg to get your first pet!</p>`}`);
 }
 function renderTrails() {
   const mw = maxWorld();
@@ -1230,7 +1288,7 @@ function renderShop() {
     <div class="card shopitem"><div class="ico" style="background:var(--pets)">${ICON('i-paw')}</div>
       <div><h3 class="t">Pet Slots: ${S.slots}</h3><p class="muted">Equip more pets at once for more speed.${sc ? '' : ' Max slots!'}</p></div>
       ${sc ? `<div class="btns"><button class="btn${S.wins >= sc ? '' : ' no'}" data-act="slot">+1 slot ${winsTag(sc)}</button></div>` : ''}</div>
-    <div class="card"><div class="lbl">Your records</div><p class="muted" style="margin-top:6px">Best run: <b>${fmt(S.best)} m</b> · Races: <b>${fmt(S.races)}</b> · Total wins earned: <b>${fmt(S.earned)}</b></p></div>
+    <div class="card"><div class="lbl">Your records</div><p class="muted" style="margin-top:6px">Best run: <b>${fmt(S.best)} m</b> · Races: <b>${fmt(S.races)}</b> · 1st places: <b>${fmt(S.firsts || 0)}</b> · Total wins earned: <b>${fmt(S.earned)}</b></p></div>
     <button class="danger${resetArm ? ' arm' : ''}" data-act="reset">${resetArm ? 'Tap again to erase everything and start over' : 'Start over (erase progress)'}</button>`;
 }
 
@@ -1241,7 +1299,8 @@ $('sheetBody').addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const act = b.dataset.act;
   if (act !== 'reset') resetArm = false;
-  if (act === 'h1') hatch(1);
+  if (act === 'tab') { ui.petTab = b.dataset.t; rerender(); $('sheetBody').scrollTop = 0; }
+  else if (act === 'h1') hatch(1);
   else if (act === 'h3') hatch(3);
   else if (act === 'best') { equipBest(); SFX.buy(); toast('Your best pets are on your team.'); }
   else if (act === 'trash') trashWeak();
@@ -1353,7 +1412,7 @@ function teleport(w, sub) {
 /* ---------------- tutorial ---------------- */
 const TUT = [
   { t: 'Tap to get fast!', p: 'Before each race you get 10 seconds. Tap the green button (or anywhere) as fast as you can. Every tap adds speed.', ic: ['i-hand'] },
-  { t: 'Race and win!', p: 'Then you run on your own. Pass gates to earn wins. The farther you go, the more wins you get.', ic: ['i-trophy'] },
+  { t: 'Race and win!', p: 'Then you run on your own. Pass gates to earn wins. Beat the other racers for bonus wins!', ic: ['i-trophy'] },
   { t: 'Get stronger', p: 'Pets give more speed. Trails give more acceleration. Rebirth to unlock 10 worlds!', ic: ['i-paw', 'i-trail', 'i-reb'] },
 ];
 function showTut(i = 0) {
@@ -1465,21 +1524,15 @@ function update(dt) {
   }
   // runner animation
   const R = runner.userData;
-  R.kick = Math.max(0, R.kick - dt * 5);
-  if (phase === 'race' && V > 1) {
-    R.phase += dt * (9 + sf * 9);
-    const s = Math.sin(R.phase), amp = 0.9 + sf * 0.25;
-    R.legL.rotation.x = s * amp; R.legR.rotation.x = -s * amp;
-    R.armL.rotation.x = -s * amp * 0.9; R.armR.rotation.x = s * amp * 0.9;
-    R.body.position.y = Math.abs(Math.cos(R.phase)) * 0.18;
-    R.body.rotation.x = -0.12 - sf * 0.14;
-  } else {
-    R.phase += dt * 3;
-    const k = R.kick;
-    R.legL.rotation.x = 0.25 + k * 0.5; R.legR.rotation.x = -0.35 - k * 0.3;
-    R.armL.rotation.x = -0.4 - k * 0.6 + Math.sin(R.phase) * 0.05; R.armR.rotation.x = 0.5 + k * 0.4;
-    R.body.position.y = -0.08 - k * 0.12 + Math.sin(R.phase * 1.3) * 0.03;
-    R.body.rotation.x = -0.18;
+  animRunner(R, phase === 'race' && V > 1, sf, dt);
+  // rival racers
+  {
+    const vE = Math.max(race.v, race.top * 0.3, 1), Vf2 = 8 + 7 * Math.log10(1 + race.v);
+    for (const bt of BOTS) {
+      const z = phase === 'tap' ? 0 : Math.max(-150, Math.min(4, -((bt.dist - race.dist) / vE) * Vf2));
+      bt.m.position.z += (z - bt.m.position.z) * Math.min(1, dt * 6);
+      animRunner(bt.m.userData, phase === 'race' && bt.v > 0, sf, dt);
+    }
   }
   // pets follow
   petMeshes.forEach((m, i) => {
